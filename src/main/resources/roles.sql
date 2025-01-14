@@ -1,0 +1,2 @@
+INSERT INTO roles(role) VALUES('CASHIER');
+INSERT INTO roles(role) VALUES('ADMIN');
