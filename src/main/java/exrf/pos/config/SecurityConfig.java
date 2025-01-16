@@ -2,10 +2,11 @@ package exrf.pos.config;
 
 import exrf.pos.security.AuthEntryPoint;
 import exrf.pos.security.AuthTokenFilter;
-import exrf.pos.service.UserServiceImpl;
+import exrf.pos.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -27,7 +28,7 @@ import java.util.List;
 @EnableMethodSecurity
 public class SecurityConfig {
     @Autowired
-    UserServiceImpl userDetailsService;
+    UserDetailsServiceImpl userDetailsService;
 
     @Autowired
     private AuthEntryPoint unauthorizedHandler;
@@ -79,10 +80,11 @@ public class SecurityConfig {
         return http.build();
     }
 
+    @Profile("prod")
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:8080")); // Update allowed origins
+        configuration.setAllowedOrigins(List.of("*")); // Update allowed origins
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type"));
         configuration.setExposedHeaders(List.of("Authorization"));

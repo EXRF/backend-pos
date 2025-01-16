@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class UserService implements UserDetails {
+public class UserDetailsImpl implements UserDetails {
     @Serial
     private static final long serialVersionUID = 1L;
 
@@ -27,7 +27,7 @@ public class UserService implements UserDetails {
 
     private Collection<? extends GrantedAuthority> authorities;
 
-    public UserService(Long id, String username, String email, String password, Collection<? extends GrantedAuthority> authorities) {
+    public UserDetailsImpl(Long id, String username, String email, String password, Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -35,12 +35,12 @@ public class UserService implements UserDetails {
         this.authorities = authorities;
     }
 
-    public static UserService build(User user) {
+    public static UserDetailsImpl build(User user) {
         List<GrantedAuthority> authorities = user.getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority(role.getRole().name()))
                 .collect(Collectors.toList());
 
-        return new UserService(
+        return new UserDetailsImpl(
                 user.getId(),
                 user.getUsername(),
                 user.getEmail(),
@@ -97,7 +97,7 @@ public class UserService implements UserDetails {
             return true;
         if (obj == null || getClass() != obj.getClass())
             return false;
-        UserService userDetails = (UserService) obj;
+        UserDetailsImpl userDetails = (UserDetailsImpl) obj;
         return Objects.equals(id, userDetails.id);
     }
 }
