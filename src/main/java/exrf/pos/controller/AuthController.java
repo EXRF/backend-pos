@@ -2,19 +2,18 @@ package exrf.pos.controller;
 
 import exrf.pos.dto.requests.LoginRequestDto;
 import exrf.pos.dto.requests.SignupRequestDto;
+import exrf.pos.dto.responses.JwtResponseDto;
 import exrf.pos.dto.responses.MessageResponseDto;
-import exrf.pos.dto.responses.UserInfoResponseDto;
 import exrf.pos.model.enums.ERole;
 import exrf.pos.model.Role;
 import exrf.pos.model.User;
 import exrf.pos.repository.RoleRepository;
 import exrf.pos.repository.UserRepository;
 import exrf.pos.security.JwtUtils;
-import exrf.pos.service.UserService;
+import exrf.pos.service.UserDetailsImpl;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseCookie;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -54,17 +53,16 @@ public class AuthController {
                 .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        UserService userDetails = (UserService) authentication.getPrincipal();
-
-        ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
+        String jwt = jwtUtils.generateJwtToken(authentication);
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
 
-        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
-                .body(new UserInfoResponseDto(userDetails.getId(),
+        return ResponseEntity.ok()
+                .body(new JwtResponseDto(
+                        jwt,
                         userDetails.getUsername(),
                         userDetails.getEmail(),
                         roles));
@@ -85,25 +83,25 @@ public class AuthController {
                 signUpRequest.getEmail(),
                 encoder.encode(signUpRequest.getPassword()));
 
-        Set<String> requestRole = signUpRequest.getRole();
+        Set<String> strRoles = signUpRequest.getRole();
         Set<Role> roles = new HashSet<>();
 
-        for (String role : requestRole) {
-            switch (role.toLowerCase()) {
-                case "admin":
+        if (strRoles == null) {
+            Role userRole = roleRepository.findByRole(ERole.CASHIER)
+                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+            roles.add(userRole);
+        } else {
+            strRoles.forEach(role -> {
+                if (role.equals("admin")) {
                     Role adminRole = roleRepository.findByRole(ERole.ADMIN)
-                            .orElseThrow(() -> new RuntimeException("Error: Admin role not found."));
+                            .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
                     roles.add(adminRole);
-                    break;
-                case "cashier":
-                    Role cashierRole = roleRepository.findByRole(ERole.CASHIER)
-                            .orElseThrow(() -> new RuntimeException("Error: Cashier role not found."));
-                    roles.add(cashierRole);
-                    break;
-                default:
-                    return ResponseEntity.badRequest()
-                            .body(new MessageResponseDto("Error: Invalid role specified."));
-            }
+                } else {
+                    Role userRole = roleRepository.findByRole(ERole.CASHIER)
+                            .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                    roles.add(userRole);
+                }
+            });
         }
 
         user.setRoles(roles);
@@ -112,10 +110,23 @@ public class AuthController {
         return ResponseEntity.ok(new MessageResponseDto("User registered successfully!"));
     }
 
-    @PostMapping("/signout")
-    public ResponseEntity<?> logoutUser() {
-        ResponseCookie cookie = jwtUtils.getCleanJwtCookie();
-        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .body(new MessageResponseDto("You've been signed out!"));
+    @PostMapping("signout")
+    public ResponseEntity<?> signOutUser(@RequestHeader("Authorization") String bearerToken) {
+        if (bearerToken == null || !bearerToken.startsWith("Bearer ")) {
+            return ResponseEntity.badRequest().body("Invalid or missing token");
+        }
+
+        String jwt = bearerToken.substring(7);
+
+        if (!jwtUtils.validateJwtToken(jwt)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
+        }
+
+        String username = jwtUtils.getUsernameFromJwtToken(jwt);
+        userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Error: User not found"));
+
+        SecurityContextHolder.clearContext();
+        return ResponseEntity.ok(new MessageResponseDto("User signout successfully"));
     }
 }

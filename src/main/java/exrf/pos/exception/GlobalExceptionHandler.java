@@ -1,6 +1,7 @@
 package exrf.pos.exception;
 
 import exrf.pos.dto.ValidationErrorDto;
+import exrf.pos.dto.responses.MessageResponseDto;
 import exrf.pos.dto.responses.ValidationErrorResponseDto;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
@@ -16,7 +17,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
-//@ControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -44,7 +44,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleGeneralException(Exception ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<?> handleGeneralException(Exception ex) {
+        return new ResponseEntity<>(new MessageResponseDto(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
