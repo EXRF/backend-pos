@@ -2,13 +2,13 @@ package exrf.pos.dto.responses;
 
 import java.util.List;
 
-public class JwtResponseDto {
+public class LoginResponseDto {
     private String token;
     private String username;
     private String email;
     private List<String> roles;
 
-    public JwtResponseDto(String token, String username, String email, List<String> roles) {
+    public LoginResponseDto(String token, String username, String email, List<String> roles) {
         this.token = token;
         this.username = username;
         this.email = email;

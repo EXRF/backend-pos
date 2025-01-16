@@ -4,7 +4,10 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -38,6 +41,20 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
+
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at", nullable = false)
+    private LocalDateTime updatedAt;
+
+    @Column(name = "is_login", nullable = false)
+    private Boolean isLogin = false;
+
+    @Column(name = "last_login_at")
+    private LocalDateTime lastLoginAt;
 
     public User() {}
 
@@ -85,5 +102,37 @@ public class User {
 
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public Boolean getLogin() {
+        return isLogin;
+    }
+
+    public void setLogin(Boolean login) {
+        isLogin = login;
+    }
+
+    public LocalDateTime getLastLoginAt() {
+        return lastLoginAt;
+    }
+
+    public void setLastLoginAt(LocalDateTime lastLoginAt) {
+        this.lastLoginAt = lastLoginAt;
     }
 }

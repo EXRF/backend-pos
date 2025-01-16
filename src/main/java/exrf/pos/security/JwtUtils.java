@@ -1,7 +1,7 @@
 package exrf.pos.security;
-
 import java.security.Key;
-import java.util.Date;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import exrf.pos.service.UserDetailsImpl;
 import jakarta.servlet.http.Cookie;
@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.WebUtils;
 
@@ -31,9 +32,13 @@ public class JwtUtils {
 
     public String generateJwtToken(Authentication authentication) {
         UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
+//        Map<String, Object> additionalInfo = new HashMap<>();
+//        additionalInfo.put("roles", userPrincipal.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList());
+//        additionalInfo.put("uname", userPrincipal.getUsername());
 
         return Jwts.builder()
                 .setSubject((userPrincipal.getUsername()))
+//                .setClaims(additionalInfo)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
                 .signWith(key(), SignatureAlgorithm.HS256)
@@ -65,4 +70,5 @@ public class JwtUtils {
 
         return false;
     }
+
 }
