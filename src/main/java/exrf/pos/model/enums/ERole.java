@@ -1,6 +1,6 @@
 package exrf.pos.model.enums;
 
 public enum ERole {
-    ADMIN,
-    CASHIER
+    ROLE_ADMIN,
+    ROLE_CASHIER
 }
