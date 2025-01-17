@@ -2,7 +2,13 @@ package exrf.pos.model;
 
 import exrf.pos.model.enums.ERole;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "roles")
 public class Role {
@@ -14,25 +20,7 @@ public class Role {
     @Column(length = 20)
     private ERole role;
 
-    public Role() {}
-
     public Role(ERole role) {
-        this.role = role;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public ERole getRole() {
-        return role;
-    }
-
-    public void setRole(ERole role) {
         this.role = role;
     }
 }

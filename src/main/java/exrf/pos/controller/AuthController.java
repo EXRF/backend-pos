@@ -12,6 +12,7 @@ import exrf.pos.security.JwtUtils;
 import exrf.pos.service.UserDetailsImpl;
 import exrf.pos.util.ResponseUtil;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +33,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/auth")
+@Slf4j
 public class AuthController {
     @Autowired
     AuthenticationManager authenticationManager;
@@ -61,7 +63,7 @@ public class AuthController {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
         user.setLastLoginAt(LocalDateTime.now());
-        user.setLogin(true);
+        user.setIsLogin(true);
         userRepository.save(user);
 
         List<String> roles = userDetails.getAuthorities().stream()
@@ -95,6 +97,7 @@ public class AuthController {
         User user = new User(signUpRequest.getUsername(),
                 signUpRequest.getEmail(),
                 encoder.encode(signUpRequest.getPassword()));
+
 
         Set<String> strRoles = signUpRequest.getRole();
         Set<Role> roles = new HashSet<>();
@@ -138,7 +141,7 @@ public class AuthController {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Error: User not found"));
 
-        user.setLogin(false);
+        user.setIsLogin(false);
         userRepository.save(user);
 
         SecurityContextHolder.clearContext();
