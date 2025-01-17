@@ -1,6 +1,8 @@
 package exrf.pos.util;
 
 import exrf.pos.dto.responses.CommonResponseDto;
+import exrf.pos.model.Role;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -19,11 +21,11 @@ public class ResponseUtil {
         return response;
     }
 
-    public static <T> CommonResponseDto<T> responseSuccess(Class<T> clazz, T data, String message, CommonResponseDto.Pagination pagination) {
-        CommonResponseDto<T> response = new CommonResponseDto<>(clazz);
+    public static <T> CommonResponseDto<List<T>> responseSuccess(List<T> data, CommonResponseDto.Metadata metadata, String message) {
+        CommonResponseDto<List<T>> response = new CommonResponseDto<>();
         response.setData(data);
         response.setMessage(message);
-        response.setPagination(pagination);
+        response.setMetadata(metadata);
         return response;
     }
 
