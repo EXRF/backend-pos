@@ -1,8 +1,15 @@
 package exrf.pos.dto.responses;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
+@Setter
+@Getter
+@ToString
 public class CommonResponseDto<T> {
 
     private T data;
@@ -18,87 +25,15 @@ public class CommonResponseDto<T> {
         }
     }
 
-    public T getData() {
-        return data;
-    }
-
-    public void setData(T data) {
-        this.data = data;
-    }
-
-    public Object getMessage() {
-        return message;
-    }
-
-    public void setMessage(Object message) {
-        this.message = message;
-    }
-
-    public Pagination getPagination() {
-        return pagination;
-    }
-
-    public void setPagination(Pagination pagination) {
-        this.pagination = pagination;
-    }
-
-    @Override
-    public String toString() {
-        return "CommonResponseDTO{" +
-                "data=" + data +
-                ", message=" + message +
-                ", pagination=" + pagination +
-                '}';
-    }
-
     // Pagination inner class
+    @Setter
+    @Getter
+    @ToString
     public static class Pagination {
         private int page;
         private int perPage;
         private int total;
         private int totalPages;
-
-        public int getPage() {
-            return page;
-        }
-
-        public void setPage(int page) {
-            this.page = page;
-        }
-
-        public int getPerPage() {
-            return perPage;
-        }
-
-        public void setPerPage(int perPage) {
-            this.perPage = perPage;
-        }
-
-        public int getTotal() {
-            return total;
-        }
-
-        public void setTotal(int total) {
-            this.total = total;
-        }
-
-        public int getTotalPages() {
-            return totalPages;
-        }
-
-        public void setTotalPages(int totalPages) {
-            this.totalPages = totalPages;
-        }
-
-        @Override
-        public String toString() {
-            return "Pagination{" +
-                    "page=" + page +
-                    ", perPage=" + perPage +
-                    ", total=" + total +
-                    ", totalPages=" + totalPages +
-                    '}';
-        }
     }
 }
 

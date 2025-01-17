@@ -3,7 +3,11 @@ package exrf.pos.dto.requests;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
 
+@Setter
+@Getter
 public class LoginRequestDto {
     @NotBlank(message = "Username must not be blank")
     @Size(min = 3, max = 20, message = "Username must be between 3 and 20 characters")
@@ -18,19 +22,4 @@ public class LoginRequestDto {
     )
     private String password;
 
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 }
