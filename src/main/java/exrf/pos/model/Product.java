@@ -2,14 +2,16 @@ package exrf.pos.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
+import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
-@Setter
-@Getter
+@Data
+@NoArgsConstructor
 @Entity
 @Table(name = "products")
 public class Product {
@@ -38,5 +40,4 @@ public class Product {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    public Product() {}
 }
