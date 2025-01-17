@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 @RestControllerAdvice
@@ -23,7 +24,7 @@ public class GlobalExceptionHandler {
         List<String> errorMessages = ex.getBindingResult().getFieldErrors().stream()
                 .map(fieldError -> fieldError.getField() + ": " + fieldError.getDefaultMessage())
                 .toList();
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseUtil.responseError(MethodArgumentNotValidException.class, errorMessages));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseUtil.responseError(GlobalExceptionHandler.class, errorMessages));
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
@@ -32,23 +33,23 @@ public class GlobalExceptionHandler {
         List<String> errorMessages = ex.getConstraintViolations().stream()
                 .map(ConstraintViolation::getMessage)
                 .toList();
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseUtil.responseError(ConstraintViolationException.class, errorMessages));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseUtil.responseError(GlobalExceptionHandler.class, errorMessages));
     }
 
     @ExceptionHandler(BadCredentialsException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ResponseEntity<?> handleWrongUsernameAndPasswordException(BadCredentialsException e) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResponseUtil.responseError(BadCredentialsException.class, "Error: Username or password is wrong"));
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResponseUtil.responseError(GlobalExceptionHandler.class, "Error: Username or password is wrong"));
     }
 
     @ExceptionHandler(UsernameNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<?> handleUsernameNotFound(UsernameNotFoundException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResponseUtil.responseError(UsernameNotFoundException.class, "Error: Username not found"));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResponseUtil.responseError(GlobalExceptionHandler.class, "Error: Username not found"));
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleGeneralException(Exception ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ResponseUtil.responseError(Exception.class, "Error " + ex.getMessage()));
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ResponseUtil.responseError(GlobalExceptionHandler.class, "Error: Something went wrong to our service"));
     }
 }

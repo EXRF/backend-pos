@@ -30,15 +30,12 @@ public class JwtUtils {
     @Value("${exrf.app.jwtExpirationMs}")
     private int jwtExpirationMs;
 
-    public String generateJwtToken(Authentication authentication) {
+    public String generateJwtToken(Authentication authentication, List<String> roles) {
         UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
-//        Map<String, Object> additionalInfo = new HashMap<>();
-//        additionalInfo.put("roles", userPrincipal.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList());
-//        additionalInfo.put("uname", userPrincipal.getUsername());
 
         return Jwts.builder()
                 .setSubject((userPrincipal.getUsername()))
-//                .setClaims(additionalInfo)
+                .claim("roles", roles)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
                 .signWith(key(), SignatureAlgorithm.HS256)
@@ -52,6 +49,11 @@ public class JwtUtils {
     public String getUsernameFromJwtToken(String token) {
         return Jwts.parserBuilder().setSigningKey(key()).build()
                 .parseClaimsJws(token).getBody().getSubject();
+    }
+
+    public Claims getClaimsFromJwtToken(String token) {
+        return Jwts.parserBuilder().setSigningKey(key()).build()
+                .parseClaimsJws(token).getBody();
     }
 
     public boolean validateJwtToken(String authToken) {

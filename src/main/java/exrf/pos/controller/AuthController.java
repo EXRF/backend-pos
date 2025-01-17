@@ -58,7 +58,6 @@ public class AuthController {
                 .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtUtils.generateJwtToken(authentication);
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
         user.setLastLoginAt(LocalDateTime.now());
@@ -68,6 +67,9 @@ public class AuthController {
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
+
+        String jwt = jwtUtils.generateJwtToken(authentication, roles);
+
 
         LoginResponseDto loginResponseDto = new LoginResponseDto(
                 jwt,
@@ -98,23 +100,22 @@ public class AuthController {
         Set<Role> roles = new HashSet<>();
 
         if (strRoles == null) {
-            Role userRole = roleRepository.findByRole(ERole.CASHIER)
+            Role userRole = roleRepository.findByRole(ERole.ROLE_CASHIER)
                     .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
             roles.add(userRole);
         } else {
             strRoles.forEach(role -> {
                 if (role.equals("admin")) {
-                    Role adminRole = roleRepository.findByRole(ERole.ADMIN)
+                    Role adminRole = roleRepository.findByRole(ERole.ROLE_ADMIN)
                             .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
                     roles.add(adminRole);
                 } else {
-                    Role userRole = roleRepository.findByRole(ERole.CASHIER)
+                    Role userRole = roleRepository.findByRole(ERole.ROLE_CASHIER)
                             .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
                     roles.add(userRole);
                 }
             });
         }
-
         user.setRoles(roles);
         userRepository.save(user);
 
