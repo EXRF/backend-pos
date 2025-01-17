@@ -1,17 +1,23 @@
 package exrf.pos.controller;
 
 import exrf.pos.dto.requests.LoginRequestDto;
+import exrf.pos.dto.requests.RefreshTokenRequestDto;
 import exrf.pos.dto.requests.SignupRequestDto;
+import exrf.pos.dto.responses.JwtRefreshResponseDto;
 import exrf.pos.dto.responses.LoginResponseDto;
+import exrf.pos.exception.RefreshTokenException;
+import exrf.pos.model.RefreshToken;
 import exrf.pos.model.enums.ERole;
 import exrf.pos.model.Role;
 import exrf.pos.model.User;
 import exrf.pos.repository.RoleRepository;
 import exrf.pos.repository.UserRepository;
 import exrf.pos.security.JwtUtils;
+import exrf.pos.service.RefreshTokenService;
 import exrf.pos.service.UserDetailsImpl;
 import exrf.pos.util.ResponseUtil;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,10 +31,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -49,6 +52,9 @@ public class AuthController {
 
     @Autowired
     JwtUtils jwtUtils;
+
+    @Autowired
+    RefreshTokenService refreshTokenService;
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequestDto loginRequest) {
@@ -72,12 +78,8 @@ public class AuthController {
 
         String jwt = jwtUtils.generateJwtToken(authentication, roles);
 
-
-        LoginResponseDto loginResponseDto = new LoginResponseDto(
-                jwt,
-                userDetails.getUsername(),
-                userDetails.getEmail(),
-                roles);
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
+        LoginResponseDto loginResponseDto = new LoginResponseDto(jwt, refreshToken.getToken(), refreshToken.getExpiryDate());
 
         return ResponseEntity.ok()
                 .body(ResponseUtil.responseSuccess(LoginResponseDto.class, loginResponseDto, "Login successful"));
@@ -146,5 +148,23 @@ public class AuthController {
 
         SecurityContextHolder.clearContext();
         return ResponseEntity.ok(ResponseUtil.responseSuccess(AuthController.class, "User signout successfully"));
+    }
+
+    @PostMapping("/refreshtoken")
+    public ResponseEntity<?> refreshToken(@Valid @RequestBody RefreshTokenRequestDto dto) {
+        String refreshToken = dto.getRefreshToken();
+
+        RefreshToken token = refreshTokenService.findByToken(refreshToken)
+                .map(refreshTokenService::verifyExpiration)
+                .orElseThrow(() -> new RefreshTokenException("Refresh Token is not in database or has expired!"));
+
+        User user = token.getUser();
+        List<String> roles = user.getRoles().stream().map(role -> role.getRole().name()).collect(Collectors.toList());
+
+        String jwtToken = jwtUtils.generateJwtToken(user.getUsername(), roles);
+
+        JwtRefreshResponseDto responseDto = new JwtRefreshResponseDto(jwtToken, refreshToken);
+
+        return ResponseEntity.ok(ResponseUtil.responseSuccess(JwtRefreshResponseDto.class, responseDto, "Success"));
     }
 }

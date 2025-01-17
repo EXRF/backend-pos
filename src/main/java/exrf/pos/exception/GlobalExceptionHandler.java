@@ -48,6 +48,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResponseUtil.responseError(GlobalExceptionHandler.class, "Error: Username not found"));
     }
 
+    @ExceptionHandler(RefreshTokenException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ResponseEntity<?> handleRefreshTokenException(RefreshTokenException e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ResponseUtil.responseError(GlobalExceptionHandler.class, "Error " + e.getMessage()));
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleGeneralException(Exception ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ResponseUtil.responseError(GlobalExceptionHandler.class, "Error: Something went wrong to our service"));
