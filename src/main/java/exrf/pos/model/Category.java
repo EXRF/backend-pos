@@ -23,9 +23,6 @@ public class Category {
 
     private String description;
 
-    @OneToMany(mappedBy = "id")
-    private Set<Product> products;
-
     @CreationTimestamp
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;

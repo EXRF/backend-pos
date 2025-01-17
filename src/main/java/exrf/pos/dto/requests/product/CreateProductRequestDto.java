@@ -16,5 +16,5 @@ public class CreateProductRequestDto {
 
     private String sku;
 
-    private String categoryId;
+    private Long categoryId;
 }

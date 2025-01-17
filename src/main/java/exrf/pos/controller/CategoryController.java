@@ -28,7 +28,7 @@ public class CategoryController {
         );
     }
 
-    @PutMapping("")
+    @PostMapping
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> createOne(@RequestBody @Valid CreateCategoryRequestDto requestDto) {
         categoryService.createOne(requestDto);
