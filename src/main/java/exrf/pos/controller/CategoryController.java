@@ -31,16 +31,16 @@ public class CategoryController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAll(@RequestParam(defaultValue = "0") int page,
+    public ResponseEntity<?> getAll(@RequestParam(defaultValue = "1") int page,
                                     @RequestParam(defaultValue = "10") int pageSize) {
-        if(page < 0 || pageSize <=0) {
-            throw new IllegalArgumentException("Page must be 0 or greater, and pageSize must be greater than 0.");
+        if(page < 1 || pageSize <=0) {
+            throw new IllegalArgumentException("Page must be 1 or greater, and pageSize must be greater than 0.");
         }
 
         Page<Category> categories = categoryService.getAll(page, pageSize);
 
         CommonResponseDto.Metadata metadata = new CommonResponseDto.Metadata(
-                categories.getPageable().getPageNumber(),
+                page,
                 categories.getPageable().getPageSize(),
                 categories.getTotalElements(),
                 categories.getTotalPages()

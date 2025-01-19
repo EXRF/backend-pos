@@ -29,7 +29,7 @@ public class ProductService {
     }
 
     public Page<Product> getAll (int page, int pageSize) {
-        Pageable pageable = PageRequest.of(page, pageSize);
+        Pageable pageable = PageRequest.of(page - 1, pageSize);
         return productRepository.findAll(pageable);
     }
 
