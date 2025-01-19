@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 @RestControllerAdvice
@@ -52,6 +51,12 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ResponseEntity<?> handleRefreshTokenException(RefreshTokenException e) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ResponseUtil.responseError(GlobalExceptionHandler.class, "Error " + e.getMessage()));
+    }
+
+    @ExceptionHandler(InvalidRoleException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<?> handleRoleException(InvalidRoleException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseUtil.responseError(GlobalExceptionHandler.class, "Error: " + e.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)
