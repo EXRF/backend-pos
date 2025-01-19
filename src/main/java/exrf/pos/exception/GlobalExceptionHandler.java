@@ -70,4 +70,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handleGeneralException(Exception ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ResponseUtil.responseError(GlobalExceptionHandler.class, "Error: Something went wrong to our service"));
     }
+
+    @ExceptionHandler(InvalidRequestException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<?> handleInvalidPageRequestException(InvalidRequestException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseUtil.responseError(GlobalExceptionHandler.class, "Error: " + e.getMessage()));
+    }
 }

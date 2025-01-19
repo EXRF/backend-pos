@@ -2,6 +2,8 @@ package exrf.pos.controller;
 
 import exrf.pos.dto.requests.product.CreateProductRequestDto;
 import exrf.pos.dto.responses.CommonResponseDto;
+import exrf.pos.exception.GlobalExceptionHandler;
+import exrf.pos.exception.InvalidRequestException;
 import exrf.pos.model.Product;
 import exrf.pos.service.ProductService;
 import exrf.pos.util.ResponseUtil;
@@ -34,7 +36,7 @@ public class ProductController {
     public ResponseEntity<?> getAll(@RequestParam(defaultValue = "1") int page,
                                     @RequestParam(defaultValue = "10") int pageSize) {
         if (page < 1 || pageSize <= 0) {
-            throw new IllegalArgumentException("Page must be 1 or greater, and pageSize must be greater than 0.");
+            throw new InvalidRequestException("Page must be 0 or greater, and pageSize must be greater than 0.");
         }
 
         Page<Product> products = productService.getAll(page, pageSize);
