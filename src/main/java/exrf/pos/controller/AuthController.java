@@ -5,6 +5,7 @@ import exrf.pos.dto.requests.RefreshTokenRequestDto;
 import exrf.pos.dto.requests.SignupRequestDto;
 import exrf.pos.dto.responses.JwtRefreshResponseDto;
 import exrf.pos.dto.responses.LoginResponseDto;
+import exrf.pos.exception.InvalidRoleException;
 import exrf.pos.exception.RefreshTokenException;
 import exrf.pos.model.RefreshToken;
 import exrf.pos.model.enums.ERole;
@@ -103,24 +104,25 @@ public class AuthController {
 
         Set<String> strRoles = signUpRequest.getRole();
         Set<Role> roles = new HashSet<>();
+        Set<String> validRoles = Set.of("admin", "cashier");
 
-        if (strRoles == null) {
+        if (strRoles != null && !validRoles.containsAll(strRoles)) {
+            throw new InvalidRoleException("Invalid roles provided. Allowed roles are: " + validRoles);
+        }
+
+        if (strRoles == null || strRoles.isEmpty()) {
             Role userRole = roleRepository.findByRole(ERole.ROLE_CASHIER)
-                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                    .orElseThrow(() -> new InvalidRoleException("Error: Default role 'cashier' not found."));
             roles.add(userRole);
         } else {
             strRoles.forEach(role -> {
-                if (role.equals("admin")) {
-                    Role adminRole = roleRepository.findByRole(ERole.ROLE_ADMIN)
-                            .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                    roles.add(adminRole);
-                } else {
-                    Role userRole = roleRepository.findByRole(ERole.ROLE_CASHIER)
-                            .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                    roles.add(userRole);
-                }
+                ERole eRole = role.equals("admin") ? ERole.ROLE_ADMIN : ERole.ROLE_CASHIER;
+                Role mappedRole = roleRepository.findByRole(eRole)
+                        .orElseThrow(() -> new InvalidRoleException("Error: Role '" + role + "' not found."));
+                roles.add(mappedRole);
             });
         }
+
         user.setRoles(roles);
         userRepository.save(user);
 

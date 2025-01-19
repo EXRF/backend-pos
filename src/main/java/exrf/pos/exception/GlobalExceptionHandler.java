@@ -54,6 +54,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ResponseUtil.responseError(GlobalExceptionHandler.class, "Error " + e.getMessage()));
     }
 
+    @ExceptionHandler(InvalidRoleException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<?> handleRoleException(InvalidRoleException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseUtil.responseError(GlobalExceptionHandler.class, "Error: " + e.getMessage()));
+    }
+
     @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<?> handleResourceNotFoundException(ResourceNotFoundException e) {

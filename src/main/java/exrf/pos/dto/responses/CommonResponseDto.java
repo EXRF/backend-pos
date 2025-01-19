@@ -1,20 +1,21 @@
 package exrf.pos.dto.responses;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
+import org.springframework.data.domain.Page;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-@Setter
 @Getter
+@Setter
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class CommonResponseDto<T> {
 
     private T data;
     private Object message;
-    private Pagination pagination = new Pagination();
+    private Metadata metadata = new Metadata();
 
     public CommonResponseDto(Class<T> clazz) {
         try {
@@ -28,11 +29,13 @@ public class CommonResponseDto<T> {
     // Pagination inner class
     @Setter
     @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
     @ToString
-    public static class Pagination {
+    public static class Metadata {
         private int page;
         private int perPage;
-        private int total;
+        private long total;
         private int totalPages;
     }
 }
