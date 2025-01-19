@@ -7,6 +7,9 @@ import exrf.pos.repository.CategoryRepository;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -21,6 +24,11 @@ public class CategoryService {
         return categoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Category with ID " + id + " not found"));
 
+    }
+
+    public Page<Category> getAll (int page, int pageSize) {
+        Pageable pageable = PageRequest.of(page, pageSize);
+        return categoryRepository.findAll(pageable);
     }
 
     public void createOne(CreateCategoryRequestDto requestDto) {
