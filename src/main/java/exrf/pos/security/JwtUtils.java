@@ -30,22 +30,22 @@ public class JwtUtils {
     @Value("${exrf.app.jwtExpirationMs}")
     private int jwtExpirationMs;
 
-    public String generateJwtToken(Authentication authentication, List<String> roles) {
+    public String generateJwtToken(Authentication authentication, String role) {
         UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
 
         return Jwts.builder()
                 .setSubject((userPrincipal.getUsername()))
-                .claim("roles", roles)
+                .claim("role", role)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
                 .signWith(key(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    public String generateJwtToken(String username, List<String> roles) {
+    public String generateJwtToken(String username, String role) {
         return Jwts.builder()
                 .setSubject(username)
-                .claim("roles", roles)
+                .claim("role", role)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
                 .signWith(key(), SignatureAlgorithm.HS256)

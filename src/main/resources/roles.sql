@@ -1,2 +1,0 @@
-INSERT INTO roles(role) VALUES('ROLE_CASHIER');
-INSERT INTO roles(role) VALUES('ROLE_ADMIN');

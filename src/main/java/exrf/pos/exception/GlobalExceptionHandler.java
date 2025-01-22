@@ -63,7 +63,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<?> handleResourceNotFoundException(ResourceNotFoundException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResponseUtil.responseError(GlobalExceptionHandler.class, "Error: Resource not found"));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResponseUtil.responseError(GlobalExceptionHandler.class, "Error: " + e.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)
@@ -75,5 +75,17 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<?> handleInvalidPageRequestException(InvalidRequestException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseUtil.responseError(GlobalExceptionHandler.class, "Error: " + e.getMessage()));
+    }
+
+    @ExceptionHandler(DuplicateResourceException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ResponseEntity<?> handleDuplicateResourceException(DuplicateResourceException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ResponseUtil.responseError(GlobalExceptionHandler.class, "Error: " + e.getMessage()));
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ResponseEntity<?> handleAccessDeniedException(AccessDeniedException e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ResponseUtil.responseError(GlobalExceptionHandler.class, "Error: " + e.getMessage()));
     }
 }

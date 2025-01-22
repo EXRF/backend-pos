@@ -11,21 +11,18 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
+@Table(name = "modules")
 @Data
-@Table(name = "roles")
 @AllArgsConstructor
 @NoArgsConstructor
-public class Role {
+public class Module {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
 
-    @OneToMany(mappedBy = "role")
-    private List<User> users;
-
-    @OneToMany(mappedBy = "role")
+    @OneToMany(mappedBy = "module")
     private List<RolePrivilege> rolePrivileges;
 
     @CreationTimestamp
