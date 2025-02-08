@@ -3,11 +3,9 @@ package exrf.pos.dto.requests;
 import java.util.Set;
 
 import jakarta.validation.constraints.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Setter
-@Getter
+@Data
 public class SignupRequestDto {
     @NotBlank(message = "Username must not be blank")
     @Size(min = 3, max = 20, message = "Username must be between 3 and 20 characters")
@@ -17,8 +15,6 @@ public class SignupRequestDto {
     @Email(message = "Invalid email format")
     private String email;
 
-    private Set<String> role;
-
     @NotBlank(message = "Password must not be blank")
     @Size(min = 6, max = 40, message = "Password must be between 6 and 40 characters")
     @Pattern(
@@ -26,4 +22,6 @@ public class SignupRequestDto {
             message = "Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character."
     )
     private String password;
+
+    private String role;
 }

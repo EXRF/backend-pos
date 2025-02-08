@@ -8,25 +8,28 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
-@Entity
 @Data
-@Table(name = "roles")
+@Entity
+@Table(name = "role_privileges")
 @AllArgsConstructor
 @NoArgsConstructor
-public class Role {
+public class RolePrivilege {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
+    @ManyToOne
+    @JoinColumn(name = "role_id", referencedColumnName = "id")
+    private Role role;
 
-    @OneToMany(mappedBy = "role")
-    private List<User> users;
+    @ManyToOne
+    @JoinColumn(name = "module_id", referencedColumnName = "id")
+    private Module module;
 
-    @OneToMany(mappedBy = "role")
-    private List<RolePrivilege> rolePrivileges;
+    @ManyToOne
+    @JoinColumn(name = "privilege_id", referencedColumnName = "id")
+    private Privilege privilege;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)

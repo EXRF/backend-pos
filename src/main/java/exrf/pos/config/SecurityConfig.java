@@ -2,6 +2,7 @@ package exrf.pos.config;
 
 import exrf.pos.security.AuthEntryPoint;
 import exrf.pos.security.AuthTokenFilter;
+import exrf.pos.security.JwtUtils;
 import exrf.pos.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -40,6 +41,9 @@ public class SecurityConfig {
     public AuthTokenFilter authenticationJwtTokenFilter() {
         return new AuthTokenFilter();
     }
+
+    @Bean
+    public JwtUtils jwtUtils() { return new JwtUtils(); }
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {

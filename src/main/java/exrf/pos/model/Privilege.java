@@ -1,5 +1,6 @@
 package exrf.pos.model;
 
+import exrf.pos.model.enums.EPrivilege;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,20 +13,18 @@ import java.util.List;
 
 @Entity
 @Data
-@Table(name = "roles")
+@Table(name = "privileges")
 @AllArgsConstructor
 @NoArgsConstructor
-public class Role {
+public class Privilege {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
+    @Enumerated(EnumType.STRING)
+    private EPrivilege privilege;
 
-    @OneToMany(mappedBy = "role")
-    private List<User> users;
-
-    @OneToMany(mappedBy = "role")
+    @OneToMany(mappedBy = "privilege")
     private List<RolePrivilege> rolePrivileges;
 
     @CreationTimestamp

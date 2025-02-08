@@ -1,17 +1,20 @@
 package exrf.pos.service;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import exrf.pos.model.Privilege;
+import exrf.pos.model.RolePrivilege;
 import exrf.pos.model.User;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serial;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
+@AllArgsConstructor
 public class UserDetailsImpl implements UserDetails {
     @Serial
     private static final long serialVersionUID = 1L;
@@ -25,27 +28,38 @@ public class UserDetailsImpl implements UserDetails {
     @JsonIgnore
     private String password;
 
+    @Getter
+    private Set<Privilege> privileges;
+
+//    @Getter
+//    private Set<String> modules;
+
     private Collection<? extends GrantedAuthority> authorities;
 
-    public UserDetailsImpl(Long id, String username, String email, String password, Collection<? extends GrantedAuthority> authorities) {
-        this.id = id;
-        this.username = username;
-        this.email = email;
-        this.password = password;
-        this.authorities = authorities;
-    }
-
     public static UserDetailsImpl build(User user) {
-        List<GrantedAuthority> authorities = user.getRoles().stream()
-                .map(role -> new SimpleGrantedAuthority(role.getRole().name()))
-                .collect(Collectors.toList());
+        List<GrantedAuthority> authorities = Collections.singletonList(
+                new SimpleGrantedAuthority(user.getRole().getName())
+        );
+
+        Set<Privilege> privileges = user.getRole().getRolePrivileges()
+                .stream()
+                .map(RolePrivilege::getPrivilege)
+                .collect(Collectors.toSet());
+//
+//        Optional<Set<String>> modules = Optional.of(user.getRole().getRolePrivileges())
+//                .map(rolePrivileges -> rolePrivileges.stream()
+//                        .map(rolePrivilege -> rolePrivilege.getModule().getName())
+//                        .collect(Collectors.toSet()));
 
         return new UserDetailsImpl(
                 user.getId(),
                 user.getUsername(),
                 user.getEmail(),
                 user.getPassword(),
-                authorities);
+                privileges,
+//                modules
+                authorities
+        );
     }
 
     @Override
