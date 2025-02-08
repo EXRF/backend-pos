@@ -107,6 +107,10 @@ public class AuthService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
+//        Throw if isLogin true to avoid fraud for multiple request
+        if (user.getIsLogin())
+            throw new RuntimeException("User already logout, please make a new sign in");
+
         user.setIsLogin(false);
         userRepository.save(user);
         SecurityContextHolder.clearContext();
@@ -124,7 +128,7 @@ public class AuthService {
 
 
         User user = token.getUser();
-        String jwtToken = jwtUtils.generateJwtToken(user.getUsername(), user.getRole().getName());
+        String jwtToken = jwtUtils.generateJwtToken(authentication, user.getRole().getName());
         return new JwtRefreshResponseDto(
                 jwtToken,
                 refreshToken
