@@ -108,11 +108,12 @@ public class AuthService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
 //        Throw if isLogin true to avoid fraud for multiple request
-        if (user.getIsLogin())
+        if (!user.getIsLogin())
             throw new RuntimeException("User already logout, please make a new sign in");
 
         user.setIsLogin(false);
         userRepository.save(user);
+        refreshTokenService.deleteByUserId(user.getId());
         SecurityContextHolder.clearContext();
     }
 
